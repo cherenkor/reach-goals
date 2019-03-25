@@ -4,7 +4,6 @@
     <v-content>
       <router-view class="ma-4"></router-view>
     </v-content>
-    <v-footer app></v-footer>
   </div>
 </template>
 

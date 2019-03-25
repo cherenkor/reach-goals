@@ -14,13 +14,18 @@ export default new Router({
     },
     {
       path: '/',
-      name: 'profile',
       component: () => import('@/layouts/Profile'),
       children: [
         {
           path: '/',
+          name: 'dashboard',
           component: () => import('@/views/Dashboard')
-        }
+        },
+        {
+          path: '/goals',
+          name: 'goals',
+          component: () => import('@/views/Goals')
+        },
       ]
     },
   ]

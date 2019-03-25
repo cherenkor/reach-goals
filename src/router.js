@@ -10,13 +10,17 @@ export default new Router({
     {
       path: '/login',
       name: 'login',
-      component: () => import('./layouts/Login.vue')
+      component: () => import('@/layouts/Login')
     },
     {
       path: '/',
       name: 'profile',
-      component: () => import('./layouts/Profile.vue'),
+      component: () => import('@/layouts/Profile'),
       children: [
+        {
+          path: '/',
+          component: () => import('@/views/Dashboard')
+        }
       ]
     },
   ]

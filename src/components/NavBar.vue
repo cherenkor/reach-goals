@@ -1,6 +1,10 @@
 <template>
   <div id="navbar">
     <v-toolbar app dense class="white elevation-0">
+      <v-toolbar-title class="blue--text text--darken-2 text-uppercase">
+        <span class="font-weight-light">Reach</span>
+        <span>Goals</span>
+      </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-side-icon flat color="grey" @click="drawer = !drawer"></v-toolbar-side-icon>
     </v-toolbar>
@@ -14,15 +18,6 @@
       width="260"
       mobile-break-point="960"
     >
-      <v-toolbar dense class="transparent elevation-0">
-        <v-toolbar-title
-          style="width: 100%"
-          class="text-xl-center text-lg-center text-md-center text-sm-center text-xs-center"
-        >Reach Goals</v-toolbar-title>
-      </v-toolbar>
-
-      <v-divider></v-divider>
-
       <v-layout align-center justify-center column class="mt-4">
         <v-flex>
           <v-avatar size="120" color="grey lighten-4">
@@ -32,7 +27,7 @@
         <v-flex
           class="my-4 mx-3 text-xl-center text-lg-center text-md-center text-sm-center text-xs-center"
         >
-          <h6 class="orange--text text--lighten-3 title">Sergey Kucherenko</h6>
+          <h2 class="orange--text text--lighten-3 title">Sergey Kucherenko</h2>
         </v-flex>
       </v-layout>
       <v-layout justify-center row class="mb-4">

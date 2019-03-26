@@ -6,7 +6,7 @@
       <v-card
         v-for="goal in goals"
         :key="goal.title"
-        :style="`border-radius: 0; border-left: 10px solid ${getColorByDifficulty(goal.difficulty)}`"
+        :style="`border-radius: 5px 0 0 5px; border-left: 10px solid ${getColorByDifficulty(goal.difficulty)}`"
         flat
       >
         <v-layout row wrap class="pa-3">

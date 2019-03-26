@@ -64,7 +64,7 @@ export default {
       drawer: true,
       menu: [
         { title: "Dashboard", icon: "dashboard", route: "/" },
-        { title: "My goals", icon: "done_all", route: "/my-goals" },
+        { title: "My goals", icon: "bookmarks", route: "/my-goals" },
         { title: "Goals", icon: "group_work", route: "/goals" },
         { title: "Logout", icon: "exit_to_app", route: "/login" }
       ]

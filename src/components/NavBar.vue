@@ -2,8 +2,8 @@
   <div id="navbar">
     <v-toolbar app dense class="white elevation-0">
       <v-toolbar-title class="blue--text text--darken-2 text-uppercase">
-        <span class="font-weight-light">Reach</span>
-        <span>Goals</span>
+        <span class="font-weight-light">Make</span>
+        <span>STEP</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-side-icon flat color="grey" @click="drawer = !drawer"></v-toolbar-side-icon>
@@ -64,7 +64,8 @@ export default {
       drawer: true,
       menu: [
         { title: "Dashboard", icon: "dashboard", route: "/" },
-        { title: "My goals", icon: "group_work", route: "/goals" },
+        { title: "My goals", icon: "done_all", route: "/my-goals" },
+        { title: "Goals", icon: "group_work", route: "/goals" },
         { title: "Logout", icon: "exit_to_app", route: "/login" }
       ]
     };

@@ -1,7 +1,8 @@
 import Vue from 'vue'
-import Vuetify from 'vuetify/lib'
-import 'vuetify/src/stylus/app.styl'
+import VueSnackbar from 'vue-snack'
+import 'vue-snack/dist/vue-snack.min.css' // https://github.com/zerodois/vue-snack
 
-Vue.use(Vuetify, {
-  iconfont: 'md',
+Vue.use(VueSnackbar, {
+  position: 'bottom-right',
+  time: 6000
 })

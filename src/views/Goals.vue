@@ -29,11 +29,44 @@
               </v-flex>
               <v-flex md2 sm2 xs6>
                 <div class="caption grey--text">Achived by users</div>
-                <div class="mt-2">{{ goal.added }} times</div>
+                <div class="mt-2">{{ goal.achivedTimes }} times</div>
               </v-flex>
               <v-flex md1 sm1 xs12 align-self-center>
-                <v-btn @click.stop="addGoal(goal)" fab small left color="success">
+                <v-btn
+                  v-if="goal.added"
+                  @click.stop="removeGoal(goal)"
+                  :loading="loading === goal.id"
+                  :disabled="!!loading"
+                  fab
+                  small
+                  left
+                  color="error"
+                  class="white--text"
+                >
+                  <v-icon>remove</v-icon>
+                  <template v-slot:loader>
+                    <span @click.stop class="icon-loader">
+                      <v-icon light>cached</v-icon>
+                    </span>
+                  </template>
+                </v-btn>
+                <v-btn
+                  v-else
+                  @click.stop="addGoal(goal)"
+                  :loading="loading === goal.id"
+                  :disabled="!!loading"
+                  fab
+                  small
+                  left
+                  color="success"
+                  class="white--text"
+                >
                   <v-icon>add</v-icon>
+                  <template v-slot:loader>
+                    <span @click.stop class="icon-loader">
+                      <v-icon light>cached</v-icon>
+                    </span>
+                  </template>
                 </v-btn>
               </v-flex>
             </v-layout>
@@ -58,14 +91,29 @@
 export default {
   data() {
     return {
-      goals: [
+      loading: false,
+      myGoals: [],
+      goals: [],
+      borderColorMap: {
+        Beginner: "#00BCD4",
+        Intemediate: "#00E676",
+        Advanced: "#FF9800"
+      }
+    };
+  },
+  mounted() {
+    this.loadMyGoals();
+  },
+  methods: {
+    loadMyGoals() {
+      this.myGoals = [
         {
           id: 1,
           title: "10 days Meditation",
           steps: 14,
           stepMinDuration: 10,
           difficulty: "Beginner",
-          added: 5,
+          achivedTimes: 5,
           categories: ["Mental"]
         },
         {
@@ -74,7 +122,31 @@ export default {
           steps: 14,
           stepMinDuration: 10,
           difficulty: "Beginner",
-          added: 5,
+          achivedTimes: 5,
+          categories: ["Body", "Mental"]
+        }
+      ];
+
+      this.loadGoals();
+    },
+    loadGoals() {
+      const goals = [
+        {
+          id: 1,
+          title: "10 days Meditation",
+          steps: 14,
+          stepMinDuration: 10,
+          difficulty: "Beginner",
+          achivedTimes: 5,
+          categories: ["Mental"]
+        },
+        {
+          id: 2,
+          title: "10 days Yoga",
+          steps: 14,
+          stepMinDuration: 10,
+          difficulty: "Beginner",
+          achivedTimes: 5,
           categories: ["Body", "Mental"]
         },
         {
@@ -83,7 +155,7 @@ export default {
           steps: 30,
           stepMinDuration: 10,
           difficulty: "Intemediate",
-          added: 5,
+          achivedTimes: 5,
           categories: ["Languages"]
         },
         {
@@ -92,7 +164,7 @@ export default {
           steps: 21,
           stepMinDuration: 15,
           difficulty: "Beginner",
-          added: 5,
+          achivedTimes: 5,
           categories: ["Writing"]
         },
         {
@@ -101,7 +173,7 @@ export default {
           steps: 14,
           stepMinDuration: 10,
           difficulty: "Beginner",
-          added: 5,
+          achivedTimes: 5,
           categories: ["Development"]
         },
         {
@@ -110,22 +182,51 @@ export default {
           steps: 14,
           stepMinDuration: 10,
           difficulty: "Advanced",
-          added: 5,
+          achivedTimes: 5,
           categories: ["Design"]
         }
-      ],
-      borderColorMap: {
-        Beginner: "#00BCD4",
-        Intemediate: "#00E676",
-        Advanced: "#FF9800"
-      }
-    };
-  },
-  methods: {
+      ];
+      const myGoalsMap = this.myGoals.reduce((acc, goal) => {
+        acc = {
+          ...acc,
+          [goal.id]: {
+            ...goal,
+            added: true
+          }
+        };
+        return acc;
+      }, {});
+      this.goals = goals.map(goal => {
+        return myGoalsMap[goal.id] || { ...goal, added: false };
+      });
+
+      this.loading = false;
+    },
     addGoal(goal) {
-      this.showSnackbar("You save this goal to your account");
-      // eslint-disable-next-line
-      console.log("Add goal", goal);
+      this.loading = goal.id;
+
+      setTimeout(() => {
+        this.myGoals = [...this.myGoals, goal];
+        this.loadGoals();
+
+        this.$snack.success({
+          text: "You've save this goal to your account",
+          button: "close"
+        });
+      }, 2000);
+    },
+    removeGoal({ id }) {
+      this.loading = id;
+
+      setTimeout(() => {
+        this.myGoals = this.myGoals.filter(goal => goal.id !== id);
+        this.loadGoals();
+
+        this.$snack.danger({
+          text: "You've save this goal to your account",
+          button: "close"
+        });
+      }, 2000);
     },
     getColorByDifficulty(difficulty) {
       return this.borderColorMap[difficulty];

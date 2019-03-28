@@ -59,7 +59,7 @@ export default {
       goals: [
         {
           userId: 2,
-          title: "Start to Meditate",
+          title: "Learn to Meditate",
           progress: "10",
           stepsLeft: "30",
           due: "01-04-2019"

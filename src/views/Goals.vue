@@ -32,7 +32,7 @@
                 <div class="mt-2">{{ goal.added }} times</div>
               </v-flex>
               <v-flex md1 sm1 xs12 align-self-center>
-                <v-btn @click.self.prevent fab small left color="success">
+                <v-btn @click.stop="addGoal(goal)" fab small left color="success">
                   <v-icon>add</v-icon>
                 </v-btn>
               </v-flex>
@@ -61,7 +61,7 @@ export default {
       goals: [
         {
           id: 1,
-          title: "Learn Meditation",
+          title: "10 days Meditation",
           steps: 14,
           stepMinDuration: 10,
           difficulty: "Beginner",
@@ -70,7 +70,7 @@ export default {
         },
         {
           id: 2,
-          title: "Learn Yoga",
+          title: "10 days Yoga",
           steps: 14,
           stepMinDuration: 10,
           difficulty: "Beginner",
@@ -122,6 +122,11 @@ export default {
     };
   },
   methods: {
+    addGoal(goal) {
+      this.showSnackbar("You save this goal to your account");
+      // eslint-disable-next-line
+      console.log("Add goal", goal);
+    },
     getColorByDifficulty(difficulty) {
       return this.borderColorMap[difficulty];
     }

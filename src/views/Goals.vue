@@ -143,7 +143,7 @@ export default {
         ...goal,
         stepsLeft: goal.steps,
         progress: 0,
-        due: "25:02:2019T00:00:0000Z"
+        due: "14:04:2019T00:00:0000Z"
       };
 
       try {

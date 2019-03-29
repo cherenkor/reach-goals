@@ -4,7 +4,7 @@
 
     <v-container>
       <v-card
-        v-for="goal in goals"
+        v-for="goal in me.goals"
         :key="goal['.key']"
         :class="getColorByType(goal.due, 'border')"
         flat
@@ -59,9 +59,6 @@ export default {
     return {
       me: {
         ref: db.collection("users").doc(this.userId),
-        resolve: data => {
-          this.goals = data.goals || [];
-        },
         reject: () => {
           this.$snack.danger("Loading profile error");
         }
@@ -71,7 +68,9 @@ export default {
   data() {
     return {
       userId: "5sbyXXpjE3XIuN5c0jW0",
-      goals: [],
+      me: {
+        goals: []
+      },
       borderColorMap: {
         0: "border-red border-darken-3",
         1: "border-red",

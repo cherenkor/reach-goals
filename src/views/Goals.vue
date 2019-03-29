@@ -24,18 +24,18 @@
                 <div class="mt-2">{{ goal.steps }}</div>
               </v-flex>
               <v-flex md2 sm2 xs6>
-                <div class="caption grey--text">Step Duration</div>
-                <div class="mt-2">{{ goal.stepMinDuration }}m</div>
+                <div class="caption grey--text">Duration</div>
+                <div class="mt-2">{{ goal.duration }}</div>
               </v-flex>
               <v-flex md2 sm2 xs6>
-                <div class="caption grey--text">Achived by users</div>
-                <div class="mt-2">{{ goal.achivedTimes }} times</div>
+                <div class="caption grey--text">Times added</div>
+                <div class="mt-2">{{ goal.timesAdded }}</div>
               </v-flex>
               <v-flex md1 sm1 xs12 align-self-center>
                 <v-btn
-                  v-if="goal.added"
+                  v-if="checkAdded(goal)"
                   @click.stop="removeGoal(goal)"
-                  :loading="loading === goal.id"
+                  :loading="loading === goal['.key']"
                   :disabled="!!loading"
                   fab
                   small
@@ -53,7 +53,7 @@
                 <v-btn
                   v-else
                   @click.stop="addGoal(goal)"
-                  :loading="loading === goal.id"
+                  :loading="loading === goal['.key']"
                   :disabled="!!loading"
                   fab
                   small
@@ -88,11 +88,30 @@
 </template>
 
 <script>
+import { db } from "../utils/firebase.js";
+import { filter, isEmpty } from "lodash";
+
 export default {
+  firestore() {
+    return {
+      goals: db.collection("goals"),
+      me: {
+        ref: db.collection("users").where("username", "==", this.username),
+        resolve: data => {
+          this.me = data[0];
+        },
+        reject: () => {
+          this.$snack.danger("Loading profile error");
+        }
+      }
+    };
+  },
   data() {
     return {
       loading: false,
       myGoals: [],
+      me: {},
+      username: "root",
       goals: [],
       borderColorMap: {
         Beginner: "#00BCD4",
@@ -102,131 +121,102 @@ export default {
     };
   },
   mounted() {
-    this.loadMyGoals();
+    // this.loadMyGoals();
   },
   methods: {
-    loadMyGoals() {
-      this.myGoals = [
-        {
-          id: 1,
-          title: "10 days Meditation",
-          steps: 14,
-          stepMinDuration: 10,
+    updateGoal(goal) {
+      this.loading = goal[".key"];
+      this.$firestore.goals
+        .doc(goal[".key"])
+        .update({
+          title: "Yoga for Beginners",
+          steps: 10,
+          duration: "10 days",
           difficulty: "Beginner",
-          achivedTimes: 5,
-          categories: ["Mental"]
-        },
-        {
-          id: 2,
-          title: "10 days Yoga",
-          steps: 14,
-          stepMinDuration: 10,
-          difficulty: "Beginner",
-          achivedTimes: 5,
-          categories: ["Body", "Mental"]
-        }
-      ];
-
-      this.loadGoals();
+          achivedTimes: 10
+        })
+        .then(() => (this.loading = false));
     },
-    loadGoals() {
-      const goals = [
-        {
-          id: 1,
-          title: "10 days Meditation",
-          steps: 14,
-          stepMinDuration: 10,
-          difficulty: "Beginner",
-          achivedTimes: 5,
-          categories: ["Mental"]
-        },
-        {
-          id: 2,
-          title: "10 days Yoga",
-          steps: 14,
-          stepMinDuration: 10,
-          difficulty: "Beginner",
-          achivedTimes: 5,
-          categories: ["Body", "Mental"]
-        },
-        {
-          id: 3,
-          title: "Learn English",
-          steps: 30,
-          stepMinDuration: 10,
-          difficulty: "Intemediate",
-          achivedTimes: 5,
-          categories: ["Languages"]
-        },
-        {
-          id: 4,
-          title: "Learn to write",
-          steps: 21,
-          stepMinDuration: 15,
-          difficulty: "Beginner",
-          achivedTimes: 5,
-          categories: ["Writing"]
-        },
-        {
-          id: 5,
-          title: "Learn HTML",
-          steps: 14,
-          stepMinDuration: 10,
-          difficulty: "Beginner",
-          achivedTimes: 5,
-          categories: ["Development"]
-        },
-        {
-          id: 6,
-          title: "Learn Illustrator",
-          steps: 14,
-          stepMinDuration: 10,
-          difficulty: "Advanced",
-          achivedTimes: 5,
-          categories: ["Design"]
-        }
-      ];
-      const myGoalsMap = this.myGoals.reduce((acc, goal) => {
-        acc = {
-          ...acc,
-          [goal.id]: {
-            ...goal,
-            added: true
-          }
-        };
-        return acc;
-      }, {});
-      this.goals = goals.map(goal => {
-        return myGoalsMap[goal.id] || { ...goal, added: false };
-      });
+    async addGoal(goal) {
+      this.loading = goal[".key"];
+      goal = {
+        ...goal,
+        stepsLeft: goal.steps,
+        progress: 0,
+        due: "25:02:2019T00:00:0000Z"
+      };
 
-      this.loading = false;
-    },
-    addGoal(goal) {
-      this.loading = goal.id;
+      try {
+        const goals = isEmpty(this.me.goals)
+          ? [goal]
+          : [goal, ...this.me.goals];
+        await db
+          .collection("users")
+          .doc(this.me[".key"])
+          .update({ goals });
+        this.me.goals = goals;
 
-      setTimeout(() => {
-        this.myGoals = [...this.myGoals, goal];
-        this.loadGoals();
+        const users = isEmpty(goal.users)
+          ? [this.me[".key"]]
+          : [this.me[".key"], ...goal.users];
+        const timesAdded = goal.timesAdded ? goal.timesAdded + 1 : 1;
+        await db
+          .collection("goals")
+          .doc(goal[".key"])
+          .update({ users, timesAdded });
 
+        this.loading = false;
         this.$snack.success({
           text: "You've save this goal to your account",
           button: "close"
         });
-      }, 2000);
-    },
-    removeGoal({ id }) {
-      this.loading = id;
-
-      setTimeout(() => {
-        this.myGoals = this.myGoals.filter(goal => goal.id !== id);
-        this.loadGoals();
-
+      } catch (e) {
+        this.loading = false;
         this.$snack.danger({
+          text: "Server error",
+          button: "close"
+        });
+      }
+    },
+    async removeGoal(goal) {
+      this.loading = goal[".key"];
+
+      try {
+        const goals = filter(
+          this.me.goals,
+          myGoal => myGoal[".key"] !== goal[".key"]
+        );
+        await db
+          .collection("users")
+          .doc(this.me[".key"])
+          .update({ goals });
+        this.me.goals = goals;
+
+        const users = filter(
+          goal.users,
+          userKey => userKey !== this.me[".key"]
+        );
+        const timesAdded = goal.timesAdded - 1;
+        await db
+          .collection("goals")
+          .doc(goal[".key"])
+          .update({ users, timesAdded });
+
+        this.loading = false;
+        this.$snack.success({
           text: "You've save this goal to your account",
           button: "close"
         });
-      }, 2000);
+      } catch (e) {
+        this.loading = false;
+        this.$snack.danger({
+          text: "Server error",
+          button: "close"
+        });
+      }
+    },
+    checkAdded(goal) {
+      return isEmpty(goal.users) ? false : goal.users.includes(this.me[".key"]);
     },
     getColorByDifficulty(difficulty) {
       return this.borderColorMap[difficulty];

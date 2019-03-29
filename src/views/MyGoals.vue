@@ -4,8 +4,8 @@
 
     <v-container>
       <v-card
-        v-for="goal in myGoals"
-        :key="goal.title"
+        v-for="goal in goals"
+        :key="goal['.key']"
         :class="getColorByType(goal.due, 'border')"
         flat
       >
@@ -51,55 +51,27 @@
 
 <script>
 import moment from "moment";
+import { db } from "../utils/firebase.js";
+// import { filter, isEmpty } from "lodash";
 
 export default {
+  firestore() {
+    return {
+      me: {
+        ref: db.collection("users").doc(this.userId),
+        resolve: data => {
+          this.goals = data.goals || [];
+        },
+        reject: () => {
+          this.$snack.danger("Loading profile error");
+        }
+      }
+    };
+  },
   data() {
     return {
-      userId: 1,
-      goals: [
-        {
-          userId: 2,
-          title: "Learn to Meditate",
-          progress: "10",
-          stepsLeft: "30",
-          due: "01-04-2019"
-        },
-        {
-          userId: 1,
-          title: "Run on prod Reach Goals website",
-          progress: "10",
-          stepsLeft: "30",
-          due: "01-04-2019"
-        },
-        {
-          userId: 1,
-          title: "Speak English Fluently",
-          progress: "80",
-          stepsLeft: "30",
-          due: "01-06-2019"
-        },
-        {
-          userId: 1,
-          title: "Learn Vue testing",
-          progress: "10",
-          stepsLeft: "10",
-          due: "01-05-2019"
-        },
-        {
-          userId: 2,
-          title: "Find job for more then $3000 per month",
-          progress: "30",
-          stepsLeft: "30",
-          due: "29-03-2019"
-        },
-        {
-          userId: 1,
-          title: "Find job for more then €5000 per month",
-          progress: "30",
-          stepsLeft: "30",
-          due: "29-03-2019"
-        }
-      ],
+      userId: "5sbyXXpjE3XIuN5c0jW0",
+      goals: [],
       borderColorMap: {
         0: "border-red border-darken-3",
         1: "border-red",
@@ -127,11 +99,6 @@ export default {
         10: "green darken-2"
       }
     };
-  },
-  computed: {
-    myGoals() {
-      return this.goals.filter(goal => goal.userId === this.userId);
-    }
   },
   methods: {
     formatDate(date) {

@@ -120,9 +120,6 @@ export default {
       }
     };
   },
-  mounted() {
-    // this.loadMyGoals();
-  },
   methods: {
     updateGoal(goal) {
       this.loading = goal[".key"];
@@ -138,13 +135,14 @@ export default {
         .then(() => (this.loading = false));
     },
     async addGoal(goal) {
-      this.loading = goal[".key"];
       goal = {
         ...goal,
         stepsLeft: goal.steps,
         progress: 0,
         due: "14:04:2019T00:00:0000Z"
       };
+
+      this.loading = goal[".key"];
 
       try {
         const goals = isEmpty(this.me.goals)

@@ -1,6 +1,6 @@
 # reach-goals
 
-
+Vue project, with Vuetify & Firestore
 
 ![alt text](https://raw.githubusercontent.com/cherenkor/reach-goals/master/goals.png)
 ![alt text](https://raw.githubusercontent.com/cherenkor/reach-goals/master/my-goals.png)
